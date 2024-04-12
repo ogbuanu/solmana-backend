@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('action_points', function (Blueprint $table) {
             $table->id();
+            $table->integer('balance');
+            $table->integer('verified_tweets');
+            $table->integer('points_per_day');
             $table->timestamps();
         });
     }
