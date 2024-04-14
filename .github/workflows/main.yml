@@ -19,4 +19,4 @@ jobs:
         run: |
           sudo apt-get update -yqq
           sudo apt-get install openssh-client sshpass -yqq
-          sshpass -p ${{ secrets.SOLMANA_SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no -T ${{ secrets.SOLMANA_SERVER_USER }}@${{ secrets.SOLMANA_SERVER_IP }} 'cd solmana-backend && git stash && git pull && composer install -n && composer dump-autoload -n && php artisan migrate --force && php artisan config:cache && exit'
+          sshpass -p ${{ secrets.SOLMANA_SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no -T ${{ secrets.SOLMANA_SERVER_USER }}@${{ secrets.SOLMANA_SERVER_IP }} 'cd api.solmana.org && git stash && git pull && composer install -n && composer dump-autoload -n && php artisan migrate --force && php artisan config:cache && exit'
