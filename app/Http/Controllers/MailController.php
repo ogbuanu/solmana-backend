@@ -16,7 +16,8 @@ class MailController extends Controller
 
     // parameter validation
     $required_params = ['subject', 'from', 'to', 'from_name', 'to_name', 'template'];
-    $components = ["vendor" => ['contract_id', 'link'], "creator" => ['project_id', 'link'], "verify" => ['link'], "notify" => ["body"]];
+    $components = ["vendor" => ['contract_id', 'link'], "creator" => ['project_id', 'link'], "verify" => ['link'], "notify" => ["body"],"solmVerify" => ["code"] ];
+    
     if (isset($components[$data->template])) $required_params = array_merge($required_params, $components[$data->template]);
 
     $build["host"] = env("APP_LINK");
