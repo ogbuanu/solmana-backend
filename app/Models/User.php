@@ -29,7 +29,11 @@ class User extends Authenticatable
         'email',
         'password',
         'referral_code',
-        'referred_by'
+        'referred_by',
+        'email_verified_at',
+        'kyc_verified',
+        'kyc_verified_at',
+        'kyc_status'
     ];
 
     /**

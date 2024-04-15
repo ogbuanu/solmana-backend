@@ -19,14 +19,11 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-
-
 Route::get('/request-email',  [AuthController::class, 'requestEmail'])->middleware('auth:sanctum');
 Route::post('/verify-email',  [AuthController::class, 'verifyEmail'])->middleware('auth:sanctum');
-
 Route::post('/logout',  [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
 Route::get('/user-details',  [UserController::class, 'userDetails'])->middleware('auth:sanctum');
+Route::get('/kyc-daily-update',  [UserController::class, 'kycDailyUpdate']);
+Route::post('/user-kyc',  [UserController::class, 'userkyc']);
 
 
