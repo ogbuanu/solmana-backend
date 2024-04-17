@@ -69,36 +69,11 @@ class UserController extends Controller
      public function userkyc(Request $request){
         $Response = new Response();
         $response = $Response::get();
-
-           $data = (object)$request->all();
-
+          $data = (object)$request->all();
           try {
-            $user = auth()->user();
-            if (isset($data->tweet_link) && $data->tweet_link != null) {
-               $parts = explode("/", $data->tweet_link);
-               $tweetId = end($parts);
 
-               $retrieveTweetUrl = "https://api.twitter.com/1.1/statuses/show.json?id=210462857140252672";
-
-
-
-               $retrieveTweetUrlMain=  str_replace(':id', $tweetId, $retrieveTweetUrl);
-     
-               $Secret  = "Bearer" . " " . env('TWITTER_API_KEY');
-        
-                $response = Http::withHeaders(["Authorization" => $Secret])->get($retrieveTweetUrlMain);
-                $res = $response->json();
-             
-               if ($response->ok()) {
-
-                   ActionPoint::where('user_id',$user->id)->update([
-                   'balance' => \DB::raw('balance + 10'),
-                   ]);
-
-                  $data =  $res;
-                $response = $Response::set(["message" => "kyc Daily Update rain successfully"],true);
-              } else $response = $Response::set(["message" => $res?->message], false);
-            } else $response = $Response::set(["message" => "tweet link is required"], false);
+            dd($data);
+   
           } catch (\Throwable $th) {
              $response = $Response::set(["message" => "{$th->getMessage()}"], false);
           }catch (\Exception $e) {
@@ -186,3 +161,21 @@ class UserController extends Controller
 
 }
 
+              //  $retrieveTweetUrl = "https://api.twitter.com/1.1/statuses/show.json?id=210462857140252672";
+
+
+
+              //  $retrieveTweetUrlMain=  str_replace(':id', $tweetId, $retrieveTweetUrl);
+     
+              //  $Secret  = "Bearer" . " " . env('TWITTER_API_KEY');
+        
+              //   $response = Http::withHeaders(["Authorization" => $Secret])->get($retrieveTweetUrlMain);
+              //   $res = $response->json();
+             
+              //  if ($response->ok()) {
+
+              //      ActionPoint::where('user_id',$user->id)->update([
+              //      'balance' => \DB::raw('balance + 10'),
+              //      ]);
+
+              //     $data =  $res;

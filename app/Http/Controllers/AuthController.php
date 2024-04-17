@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\ActionPoint;
 use App\Models\TaskLogs;
 use App\Models\TokenVerification;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    //
-    public $response;
+        public $response;
     static $appStatus;
     public function __construct()
     {
