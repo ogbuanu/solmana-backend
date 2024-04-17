@@ -10,7 +10,8 @@ return [
     "emailVerification" => "EMAIL_VERIFICATION",
     "transaction" => "TRANSACTION",
 
-    "TokenExpiresInMinutes"=> 20
+    "TokenExpiresInMinutes"=> 20,
+    "defaultPassword" =>"password1234Default"
   ],
 
 

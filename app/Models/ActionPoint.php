@@ -13,10 +13,11 @@ class ActionPoint extends Model
 
         protected $fillable = [
         'user_id',
-        'token_for',
-        'code',
-        'status',
-        'expires_at',
+        'balance',
+        'verified_tweets',
+        'last_tweet',
+        'last_kyc_earning',
+        'last_referral',
     ];
 
    public function user()

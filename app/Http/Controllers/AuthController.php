@@ -63,6 +63,14 @@ class AuthController extends Controller
 
         $Response = new Response();
         $response = $Response::get();
+
+        if(isset($request->login_type)){
+            if ($request->login_type !== "" && $request->login_type == "twitter") {
+               $request->merge(['password' => config('variables.defaultPassword')]);
+            }
+           unset($request->login_type);
+        }
+
         $fields = array_extract($request->toArray(), ["email", "password"]);
         // Check required fields
         $isFilled = isRequired($fields);
@@ -96,6 +104,13 @@ class AuthController extends Controller
         $tokenFor = object(config('variables.tokenFor'));
 
         $required = ["email", "password","name"];
+        if(isset($request->register_type)){
+            if ($request->register_type !== "" && $request->register_type == "twitter") {
+               $request->merge(['password' => config('variables.defaultPassword')]);
+            }
+           unset($request->register_type);
+        };
+
         $fields = object(array_extract($request->toArray(), $required, true));
         $data = (object) $request->all();
         // Check required fields
@@ -119,7 +134,8 @@ class AuthController extends Controller
                                         $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
                                         if ($referralCodeIsValid) {
                                           $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                                          $referral->referral_point += 1;  
+                                          $referral->balance += 1;  
+                                          $referral->last_referral = Carbon::now();  
                                           $referral->save();
                                         }else{
                                           $data->referred_by = null;

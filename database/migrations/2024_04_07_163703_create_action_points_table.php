@@ -17,9 +17,8 @@ return new class extends Migration
             $table->integer('balance')->default(0);
             $table->integer('verified_tweets')->default(0);
             $table->timestamp('last_tweet')->nullable();
-            $table->integer('referral_point')->default(0);
-            $table->integer('points_per_day')->default(0);
-            $table->integer('earning_point')->default(0);
+             $table->timestamp('last_kyc_earning')->nullable();
+            $table->timestamp('last_referral')->nullable();
             $table->timestamps();
         });
 
