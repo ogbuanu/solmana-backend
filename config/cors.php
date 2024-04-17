@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
        /*
     |--------------------------------------------------------------------------
     | Laravel CORS Options
@@ -24,8 +24,6 @@ return [
   'paths' => [
     "*",
   ],
-
-
    /*
    * Matches the request method. `['*']` allows all methods.
    */
