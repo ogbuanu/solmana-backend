@@ -39,4 +39,8 @@ return [
     "bearer_token" => env('TWITTER_BEARER_KEY'),
     ],
 
+   'blockpass' => [
+    'secret_key' => "4ca88ba0-cf52-41b1-b4ab-03e650320258",
+   ],
+
 ];
