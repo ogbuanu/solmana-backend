@@ -183,8 +183,8 @@
     <button id="blockpass-kyc-connect">Connect with Blockpass</button>
     <script>
       const blockpass = new BlockpassKYCConnect("4ca88ba0-cf52-41b1-b4ab-03e650320258", {
-        // refId: "9bd4611d-9b4d-40ed-82f6-7ea20143719d",
-        id:"9bd4611d-9b4d-40ed-82f6-7ea20143719d"
+        refId: "9bd4611d-9b4d-40ed-82f6-7ea20143719d",
+        // id:"9bd4611d-9b4d-40ed-82f6-7ea20143719d"
          email:"typebasic@gmail.com"
       });
 
