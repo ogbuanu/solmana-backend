@@ -8,6 +8,7 @@ use App\Models\TaskLogs;
 use App\Models\TokenVerification;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
