@@ -85,9 +85,9 @@ class UserController extends Controller
 
          Log::info(json_encode($webhookData));
         
-        $receivedSignature = $request->header('X-Signature');
+        // $receivedSignature = $request->header('X-Signature');
 
-          // $receivedSignature = $request->header('X-Hub-Signature');
+          $receivedSignature = $request->header('X-Hub-Signature');
         
         $expectedSignature = hash_hmac('sha256', $webhookData, $secretKey, true);
         $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
