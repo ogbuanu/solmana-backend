@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -29,3 +30,17 @@ Route::post('/user-kyc',[UserController::class, 'userkyc']);
 
 Route::post('/verify-tweet',[UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
 
+
+Route::get('/cleareverything', function () {
+    $clearcache = Artisan::call('cache:clear');
+    echo "Cache cleared<br>";
+
+    $clearview = Artisan::call('view:clear');
+    echo "View cleared<br>";
+
+    $clearconfig = Artisan::call('config:cache');
+    echo "Config cleared<br>";
+
+    $cleardebugbar = Artisan::call('debugbar:clear');
+    echo "Debug Bar cleared<br>";
+});
