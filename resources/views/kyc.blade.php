@@ -10,15 +10,9 @@
   <body>
     <button id="blockpass-kyc-connect">Connect with Blockpass</button>
     <script>
-  //     const blockpass = new BlockpassKYCConnect("4ca88ba0-cf52-41b1-b4ab-03e650320258", {
-  //  refId: "9bd9312b-6d68-4c26-901c-6733cc019ae5",
-  //       // id:"9bd4611d-9b4d-40ed-82f6-7ea20143719d"
-  //        email:"typebasic@gmail.com"
-  //     });
-
-    const blockpass = new BlockpassKYCConnect("solmana_launchpad_69a8d", {
-        refId: "9bd9312b-6d68-4c26-901c-6733cc019ae5",
-        email: "typebasic@gmail.com"
+      const blockpass = new BlockpassKYCConnect("4ca88ba0-cf52-41b1-b4ab-03e650320258", {
+        refId: "9bd456d9-95a0-4125-a215-c4bf02703e7a",
+        email: "testing@gmail.com",
       });
 
       blockpass.startKYCConnect();

@@ -12,13 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('action_points', function (Blueprint $table) {
-            $table->id();
-            $table->integer('balance');
-            $table->integer('verified_tweets');
-            $table->integer('points_per_day');
+          $table->uuid("id")->primary();
+            $table->foreignUuid('user_id');
+            $table->integer('balance')->default(0);
+            $table->integer('verified_tweets')->default(0);
+            $table->timestamp('last_tweet')->nullable();
+             $table->timestamp('last_kyc_earning')->nullable();
+            $table->timestamp('last_referral')->nullable();
             $table->timestamps();
         });
+
+      Schema::table("action_points", function (Blueprint $table) {
+            $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
+        });
     }
+
 
     /**
      * Reverse the migrations.
