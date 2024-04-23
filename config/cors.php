@@ -2,7 +2,7 @@
 
 return [
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
@@ -15,23 +15,22 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
 
-    'allowed_methods' => ['POST', 'GET', 'PATCH', 'DELETE', 'PUT'],
+  'allowed_methods' => ['POST', 'GET', 'PATCH', 'DELETE', 'PUT'],
 
-  
-    'allowed_origins' =>["http://localhost:3000","https://solmana.org/"],
 
-    'allowed_origins_patterns' => [],
+  'allowed_origins' => ["http://localhost:3000", "https://solmana.org"],
 
-    'allowed_headers' => ['*'],
+  'allowed_origins_patterns' => [],
 
-    'exposed_headers' => [],
+  'allowed_headers' => ['*'],
 
-    'max_age' => 0,
+  'exposed_headers' => [],
 
-    'supports_credentials' => false,
+  'max_age' => 0,
+
+  'supports_credentials' => false,
 
 ];
-
