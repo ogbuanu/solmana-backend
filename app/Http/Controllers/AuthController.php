@@ -8,6 +8,7 @@ use App\Models\TaskLogs;
 use App\Models\TokenVerification;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -173,6 +174,10 @@ class AuthController extends Controller
                                     object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $creator->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name, 'template' => 'verify', 'link' =>$creator_email_link])
                                 );
 
+
+
+                                       Log::info(json_encode($response->mail));
+
                                 $data = $this->login($request, true);
 
                                 $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
@@ -216,6 +221,9 @@ class AuthController extends Controller
                      $response->mail = $mailer->sendMail(
                     object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $user->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$creator_email_link])
                     );
+
+                          Log::info(json_encode($response->mail));
+
 
               $response = $Response::set(["message" => "Email verification link has been sent to your email address"], true);
             } else $response->message = "Email is already verified";
@@ -348,6 +356,9 @@ class AuthController extends Controller
                      $response->mail = $mailer->sendMail(
                     object(['subject' => "RESET PASSWORD", 'from' => env("APP_EMAIL"), 'to' => $data->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$reset_password_link])
                     );
+
+                          Log::info(json_encode($response->mail));
+
 
                    $response = $Response::set(["message" => "Reset password link has been sent to your email address"], true);
                 }else  $response = $Response::set(["message" => "invalid email address"], false);

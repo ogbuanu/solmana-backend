@@ -13,7 +13,4 @@ return [
     "TokenExpiresInMinutes"=> 20,
     "defaultPassword" =>"password1234Default"
   ],
-
-
-
 ];
