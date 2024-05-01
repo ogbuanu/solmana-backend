@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NotifyMail;
 use Illuminate\Http\Request;
 use App\Models\ActionPoint;
 use App\Models\TaskLogs;
@@ -151,7 +152,7 @@ class AuthController extends Controller
                                 ActionPoint::create(["user_id" => $creator->id]);
 
                                 // Send Mails
-                                $mailer = new MailController;
+                                // $mailer = new MailController;
                            
                                 $creator_name = $creator->name;
 
@@ -170,19 +171,21 @@ class AuthController extends Controller
 
                                 $creator_email_link = env("APP_LINK") . "/verify-token/{$token->id}";
 
-                                $response->mail = $mailer->sendMail(
-                                    object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $creator->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name, 'template' => 'verify', 'link' =>$creator_email_link])
-                                );
+                                $details = ['subject' => "Email Verification",
+                                 'from' => env("APP_EMAIL"), 'to' => $creator->email,
+                                 'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name, 
+                                 'template' => 'verify',
+                                 'link' =>$creator_email_link
+                                ];
 
+                                 $result = Mail::to(config('app.email'))->send(
+                                     new NotifyMail($details)
+                                 );
 
-
-                                       Log::info(json_encode($response->mail));
-
+                                Log::info(json_encode($result ));
                                 $data = $this->login($request, true);
-
                                 $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
                             } catch (\Exception $th) {
-                                                throw $th;
                                 $response->message = "An error occured, contact support";
                             }
                         } else $response->message = "User already exists, try resetting password instead";
@@ -213,18 +216,15 @@ class AuthController extends Controller
 
                  $TokenVerifi->expires_at = $TokenExpires;
                  $TokenVerifi->save();
-
-                   $mailer = new MailController;
                     
                     $creator_email_link = env("APP_LINK") . "/verify-token/{$TokenVerifi->id}";
+                    $details = ['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $user->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$creator_email_link];
 
-                     $response->mail = $mailer->sendMail(
-                    object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $user->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$creator_email_link])
+                    $result = Mail::to(config('app.email'))->send(
+                        new NotifyMail($details)
                     );
 
-                          Log::info(json_encode($response->mail));
-
-
+                 Log::info(json_encode($result));
               $response = $Response::set(["message" => "Email verification link has been sent to your email address"], true);
             } else $response->message = "Email is already verified";
             } catch (\Throwable $th) {
@@ -349,17 +349,14 @@ class AuthController extends Controller
                  } else {
                     $TokenVerifi = TokenVerification::create(["email" => $data->email,"token_for" => $tokenFor->passwordReset,"expires_at" =>  $TokenExpires]);
                  }
+                    $reset_password_link = env("APP_LINK") . "/reset-password/{$TokenVerifi->id}";
 
-                     $mailer = new MailController;
-                     $reset_password_link = env("APP_LINK") . "/reset-password/{$TokenVerifi->id}";
-
-                     $response->mail = $mailer->sendMail(
-                    object(['subject' => "RESET PASSWORD", 'from' => env("APP_EMAIL"), 'to' => $data->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$reset_password_link])
+                   $details = ['subject' => "RESET PASSWORD", 'from' => env("APP_EMAIL"), 'to' => $data->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $user, 'template' => 'verify', 'link' =>$reset_password_link];
+                
+                    $result = Mail::to(config('app.email'))->send(
+                        new NotifyMail($details)
                     );
-
-                          Log::info(json_encode($response->mail));
-
-
+                    Log::info(json_encode($result));
                    $response = $Response::set(["message" => "Reset password link has been sent to your email address"], true);
                 }else  $response = $Response::set(["message" => "invalid email address"], false);
             } catch (\Throwable $th) {
