@@ -13,7 +13,11 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Solmana'),
+
+    'app_link' => env('APP_LINK','https://solmana.org'),
+    
+    "block_pass_secret" => env('BLOCK_PASS_SECRET'),
 
     /*
     |--------------------------------------------------------------------------
