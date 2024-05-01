@@ -9,7 +9,6 @@ return [
     "passwordReset" => "PASSWORD_RESET",
     "emailVerification" => "EMAIL_VERIFICATION",
     "transaction" => "TRANSACTION",
-
     "TokenExpiresInMinutes"=> 20,
     "defaultPassword" =>"password1234Default"
   ],

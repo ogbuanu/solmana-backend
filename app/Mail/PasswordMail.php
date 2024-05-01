@@ -7,31 +7,39 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class PasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data =[];
+    public $data ;
 
     /**
      * Create a new message instance.
      */
     public function __construct(array $data)
     {
-
         $this->data = $data;
     }
 
-        /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function envelope(): Envelope{
+
+      $mail_from = config('mail.from.address');
+      $name = config('mail.from.name');
+
+        return new Envelope(
+            from: new Address($mail_from,$name),
+            subject: $this->data['subject'],
+        );
+    }
+
+        public function content(): Content
     {
-        //appName,domain,username,activateLink,appMail
-        return $this->view('email.password')->subject($this->data['subject']);
+        return new Content(
+            view: 'email.password',
+            with: $this->data,
+        );
     }
 }

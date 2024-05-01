@@ -7,13 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class NotifyMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data =[];
+    public $data ;
 
     /**
      * Create a new message instance.
@@ -24,15 +25,22 @@ class NotifyMail extends Mailable
         $this->data = $data;
     }
 
-        /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
-    {
-        //appName,domain,username,activateLink,appMail
-        return $this->view('email.notify')->subject($this->data['subject']);
+        public function envelope(): Envelope{
+
+      $mail_from = config('mail.from.address');
+      $name = config('mail.from.name');
+
+        return new Envelope(
+            from: new Address($mail_from,  $name),
+            subject: $this->data['subject'],
+        );
     }
 
+        public function content(): Content
+    {
+        return new Content(
+            view: 'email.notify',
+            with: $this->data,
+        );
+    }
 }
