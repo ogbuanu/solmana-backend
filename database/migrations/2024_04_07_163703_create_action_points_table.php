@@ -12,22 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('action_points', function (Blueprint $table) {
-          $table->uuid("id")->primary();
+            $tireLevel = config("data.tireLevel");
+
+            $table->uuid("id")->primary();
             $table->foreignUuid('user_id');
             $table->integer('balance')->default(0);
             $table->integer('verified_tweets')->default(0);
-            $table->timestamp('last_tweet')->nullable();
-             $table->timestamp('last_kyc_earning')->nullable();
-            $table->timestamp('last_referral')->nullable();
+            $table->string('last_tweet')->nullable();
+            $table->string('last_kyc_earning')->nullable();
+            $table->string('last_referral')->nullable();
+            $table->enum('tire_level', array_values($tireLevel))->default(object($tireLevel)->none);
             $table->timestamps();
         });
 
-      Schema::table("action_points", function (Blueprint $table) {
+        Schema::table("action_points", function (Blueprint $table) {
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
         });
     }
 
-
+    // TIRE
     /**
      * Reverse the migrations.
      */

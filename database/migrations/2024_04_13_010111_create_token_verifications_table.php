@@ -12,17 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('token_verifications', function (Blueprint $table) {
-           $table->uuid("id")->primary();
+
+
+            $table->uuid("id")->primary();
             $table->string('email');
             $table->string('token_for');
-            $table->enum('status',['USED','NOTUSED'])->default('NOTUSED');
+            $table->enum('status', ['USED', 'NOTUSED'])->default('NOTUSED');
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
-        
     }
 
-    
+
     /**
      * Reverse the migrations.
      */
