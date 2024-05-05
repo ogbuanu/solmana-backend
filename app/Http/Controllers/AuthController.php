@@ -80,27 +80,27 @@ class AuthController extends Controller
             unset($request->login_type);
         }
 
-        if ($request->password == "" && $request->login_type !== "twitter") {
-            $response = $Response::set(["message" => "password is required"], true);
-        }
-
         $fields = array_extract($request->toArray(), ["email", "password"]);
+        // Check required fields
+        $isFilled = isRequired($fields);
+        if ($isFilled === true) {
 
-        $credentials = request(array_keys($fields));
-        $user = User::where("email", "=", $credentials["email"])->first();
-        if (auth()->attempt($credentials)) {
+            $credentials = request(array_keys($fields));
+            $user = User::where("email", "=", $credentials["email"])->first();
+            if (auth()->attempt($credentials)) {
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+                $token = $user->createToken('auth_token')->plainTextToken;
 
-            $response->status = true;
-            $response->message = "Successful";
-            $response->code = $this->response->success;
-            $user = auth()->user();
-            $response->data = ["user" => $user, "auth" => $this->respondWithToken($token)];
-        } else {
-            $response->message = "Incorrect email or password";
-            $response->code = $this->response->unauthorized;
-        }
+                $response->status = true;
+                $response->message = "Successful";
+                $response->code = $this->response->success;
+                $user = auth()->user();
+                $response->data = ["user" => $user, "auth" => $this->respondWithToken($token)];
+            } else {
+                $response->message = "Incorrect email or password";
+                $response->code = $this->response->unauthorized;
+            }
+        } else $response->message = "Required fields are empty";
 
         if ($internal) return $response->data;
         else  return response()->json($response,  $response->code);
@@ -115,10 +115,6 @@ class AuthController extends Controller
         $required = ["email", "password", "name"];
         if (isset($request->register_type)) {
             if ($request->register_type !== "" && $request->register_type == "twitter") {
-                $request->merge(['password' => config('variables.defaultPassword')]);
-            }
-
-            if ($request->register_type !== "" && $request->register_type !== "twitter") {
                 $request->merge(['password' => config('variables.defaultPassword')]);
             }
             unset($request->register_type);
@@ -147,7 +143,7 @@ class AuthController extends Controller
                                     $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
                                     if ($referralCodeIsValid) {
                                         $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                                        $referral->balance += 10;
+                                        $referral->balance += 1;
                                         $referral->last_referral = Carbon::now();
                                         $referral->save();
                                     } else {
@@ -163,7 +159,6 @@ class AuthController extends Controller
                                 ActionPoint::create(["user_id" => $creator->id]);
 
                                 // Send Mails
-                                $mailer = new MailController;
 
                                 $creator_name = $creator->name;
 
@@ -180,22 +175,33 @@ class AuthController extends Controller
                                     "expires_at" =>  $TokenExpires
                                 ]);
 
-                                $creator_email_link = env("APP_LINK") . "/verify-token/{$token->id}";
+                                $creator_email_link = config('app.app_link') . "/verify-token/{$token->id}";
 
-                                $response->mail = $mailer->sendMail(
-                                    object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $creator->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name, 'template' => 'verify', 'link' => $creator_email_link])
+
+                                $details = [
+                                    'subject' => "Email Verification",
+                                    'from' => env("APP_EMAIL"), 'to' => $creator->email,
+                                    'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name,
+                                    'template' => 'verify',
+                                    'link' => $creator_email_link
+                                ];
+
+                                $response->mail  = Mail::to($creator->email)->send(
+                                    new VerifyMail($details)
                                 );
 
+                                Log::info(json_encode($response->mail));
                                 $data = $this->login($request, true);
-
                                 $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
                             } catch (\Exception $th) {
+                                throw $th;
                                 $response->message = "An error occured, contact support";
                             }
                         } else $response->message = "User already exists, try resetting password instead";
                     } else $response->message = $isValidPassword;
                 } else $response->message = "Invalid email type";
             } catch (\Throwable $th) {
+                throw $th;
                 $response = $Response::set(["message" => "{$th->getMessage()}"], false);
             }
         } else $response->message = "Required fields are empty";
