@@ -67,7 +67,7 @@ class AuthController extends Controller
         return $token;
     }
 
-    public function login(LoginRequest $request, bool $internal = false)
+    public function login(Request $request, bool $internal = false)
     {
 
         $Response = new Response();
@@ -106,12 +106,13 @@ class AuthController extends Controller
         else  return response()->json($response,  $response->code);
     }
 
-    public function register(RegisterRequest $request)
+    public function register(Request $request)
     {
         $Response = new Response();
         $response = $Response::get();
         $tokenFor = object(config('variables.tokenFor'));
 
+        $required = ["email", "password", "name"];
         if (isset($request->register_type)) {
             if ($request->register_type !== "" && $request->register_type == "twitter") {
                 $request->merge(['password' => config('variables.defaultPassword')]);
@@ -119,88 +120,85 @@ class AuthController extends Controller
             unset($request->register_type);
         };
 
-        $fields = (object)  $request->all();
+        $fields = object(array_extract($request->toArray(), $required, true));
         $data = (object) $request->all();
+        // Check required fields
+        $isFilled = isRequired($fields);
+        if ($isFilled === true) {
 
-        try {
-            // Check if user already exists
-            if (!User::where("email", $fields->email)->exists()) {
-                try {
+            try {
+                // Validate email
+                if (filter_var($fields->email, FILTER_VALIDATE_EMAIL)) {
 
-                    $data->referral_code =  self::generateReferralCode();
+                    //  validate passowrd
+                    $isValidPassword = $this->validatePassword($fields->password);
+                    if ($isValidPassword === true) {
+                        // Check if user already exists
+                        if (!User::where("email", $fields->email)->exists()) {
+                            try {
 
-                    if (isset($data->referred_by) && $data->referred_by !== "") {
-                        $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
-                        if ($referralCodeIsValid) {
-                            $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                            $referral->balance += 10;
-                            $referral->last_referral = Carbon::now();
-                            $referral->save();
-                        } else {
-                            $data->referred_by = null;
-                        };
-                    }
+                                $data->referral_code =  self::generateReferralCode();
 
-                    // hash password
-                    $data->password = app("hash")->make($data->password);
+                                if (isset($data->referred_by) && $data->referred_by !== "") {
+                                    $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
+                                    if ($referralCodeIsValid) {
+                                        $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
+                                        $referral->balance += 10;
+                                        $referral->last_referral = Carbon::now();
+                                        $referral->save();
+                                    } else {
+                                        $data->referred_by = null;
+                                    };
+                                }
 
-                    $creator = User::create(toArray($data));
+                                // hash password
+                                $data->password = app("hash")->make($data->password);
 
-                    ActionPoint::create(["user_id" => $creator->id]);
+                                $creator = User::create(toArray($data));
 
-                    // Send Mails
+                                ActionPoint::create(["user_id" => $creator->id]);
 
-                    $creator_name = $creator->name;
-                    $now = Carbon::now();
+                                // Send Mails
+                                $mailer = new MailController;
 
-                    $TokenExpiresInMinutes = config('variables.TokenExpiresInMinutes');
-                    $TokenExpires = $now->addMinutes($TokenExpiresInMinutes);
+                                $creator_name = $creator->name;
 
+                                $now = Carbon::now();
 
-                    // Send the creator an email verification link if his email is still unverified
-                    $token = TokenVerification::create([
-                        "token_for" => $tokenFor->emailVerification,
-                        "email" =>  $creator->email,
-                        "expires_at" =>  $TokenExpires
-                    ]);
-
-                    $creator_email_link = config('app.app_link') . "/verify-token/{$token->id}";
+                                $TokenExpiresInMinutes = config('variables.TokenExpiresInMinutes');
+                                $TokenExpires = $now->addMinutes($TokenExpiresInMinutes);
 
 
-                    $details = [
-                        'subject' => "Email Verification",
-                        'from' => env("APP_EMAIL"), 'to' => $creator->email,
-                        'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name,
-                        'template' => 'verify',
-                        'link' => $creator_email_link
-                    ];
+                                // Send the creator an email verification link if his email is still unverified
+                                $token = TokenVerification::create([
+                                    "token_for" => $tokenFor->emailVerification,
+                                    "email" =>  $creator->email,
+                                    "expires_at" =>  $TokenExpires
+                                ]);
 
-                    $response->mail = Mail::to($creator->email)->queue(
-                        new VerifyMail($details)
-                    );
+                                $creator_email_link = env("APP_LINK") . "/verify-token/{$token->id}";
 
-                    Log::info(json_encode($response->mail));
+                                $response->mail = $mailer->sendMail(
+                                    object(['subject' => "Email Verification", 'from' => env("APP_EMAIL"), 'to' => $creator->email, 'from_name' =>  env("APP_NAME"), 'to_name' => $creator_name, 'template' => 'verify', 'link' => $creator_email_link])
+                                );
 
-                    unset($request->register_type);
-                    unset($request->referred_by);
-                    unset($request->name);
+                                $data = $this->login($request, true);
 
-                    $request = new LoginRequest();
-                    $data = $this->login($request, true);
-                    $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
-                } catch (\Exception $th) {
-                    throw $th;
-                    $response->message = "An error occured, contact support";
-                }
-            } else $response->message = "User already exists, try resetting password instead";
-        } catch (\Throwable $th) {
-            throw $th;
-            $response = $Response::set(["message" => "{$th->getMessage()}"], false);
-        }
-
+                                $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
+                            } catch (\Exception $th) {
+                                $response->message = "An error occured, contact support";
+                            }
+                        } else $response->message = "User already exists, try resetting password instead";
+                    } else $response->message = $isValidPassword;
+                } else $response->message = "Invalid email type";
+            } catch (\Throwable $th) {
+                $response = $Response::set(["message" => "{$th->getMessage()}"], false);
+            }
+        } else $response->message = "Required fields are empty";
 
         return response()->json($response,  $response->code);
     }
+
 
     public function requestEmail(Request $request)
     {
