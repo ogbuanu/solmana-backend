@@ -80,27 +80,27 @@ class AuthController extends Controller
             unset($request->login_type);
         }
 
+        if ($request->password == "" && $request->login_type !== "twitter") {
+            $response = $Response::set(["message" => "password is required"], true);
+        }
+
         $fields = array_extract($request->toArray(), ["email", "password"]);
-        // Check required fields
-        $isFilled = isRequired($fields);
-        if ($isFilled === true) {
 
-            $credentials = request(array_keys($fields));
-            $user = User::where("email", "=", $credentials["email"])->first();
-            if (auth()->attempt($credentials)) {
+        $credentials = request(array_keys($fields));
+        $user = User::where("email", "=", $credentials["email"])->first();
+        if (auth()->attempt($credentials)) {
 
-                $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-                $response->status = true;
-                $response->message = "Successful";
-                $response->code = $this->response->success;
-                $user = auth()->user();
-                $response->data = ["user" => $user, "auth" => $this->respondWithToken($token)];
-            } else {
-                $response->message = "Incorrect email or password";
-                $response->code = $this->response->unauthorized;
-            }
-        } else $response->message = "Required fields are empty";
+            $response->status = true;
+            $response->message = "Successful";
+            $response->code = $this->response->success;
+            $user = auth()->user();
+            $response->data = ["user" => $user, "auth" => $this->respondWithToken($token)];
+        } else {
+            $response->message = "Incorrect email or password";
+            $response->code = $this->response->unauthorized;
+        }
 
         if ($internal) return $response->data;
         else  return response()->json($response,  $response->code);
@@ -115,6 +115,10 @@ class AuthController extends Controller
         $required = ["email", "password", "name"];
         if (isset($request->register_type)) {
             if ($request->register_type !== "" && $request->register_type == "twitter") {
+                $request->merge(['password' => config('variables.defaultPassword')]);
+            }
+
+            if ($request->register_type !== "" && $request->register_type !== "twitter") {
                 $request->merge(['password' => config('variables.defaultPassword')]);
             }
             unset($request->register_type);
