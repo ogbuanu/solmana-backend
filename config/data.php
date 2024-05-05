@@ -38,7 +38,11 @@ return ([
   ],
   "dateFormat" => "M dS, Y",
 
-
-
-  
+  "tireLevel" => [
+    'none' => "NONE",
+    "good" => "GOOD",
+    "better" => "BETTER",
+    "best" => "BEST",
+    "rich" => "RICH"
+  ]
 ]);
