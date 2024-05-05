@@ -86,7 +86,8 @@ class AuthController extends Controller
 
         $fields = array_extract($request->toArray(), ["email", "password"]);
 
-        $credentials = request(array_keys($fields));
+        $credentials = $request->only(['email', 'password']);
+
         $user = User::where("email", "=", $credentials["email"])->first();
         if (auth()->attempt($credentials)) {
 
