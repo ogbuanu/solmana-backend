@@ -143,7 +143,7 @@ class AuthController extends Controller
                                     $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
                                     if ($referralCodeIsValid) {
                                         $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                                        $referral->balance += 1;
+                                        $referral->balance += 10;
                                         $referral->last_referral = Carbon::now();
                                         $referral->save();
                                     } else {
