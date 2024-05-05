@@ -191,6 +191,10 @@ class AuthController extends Controller
                     // unset($request->name);
 
                     $request = new LoginRequest();
+
+
+                    $request->merge(['password' => $data->password, "email" => $data->email]);
+
                     $data = $this->login($request, true);
 
                     log::info(json_encode($data));
