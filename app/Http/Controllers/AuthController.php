@@ -80,6 +80,10 @@ class AuthController extends Controller
             unset($request->login_type);
         }
 
+        if ($request->password == "" && $request->login_type !== "twitter") {
+            $response = $Response::set(["message" => "password is required"], true);
+        }
+
         $fields = array_extract($request->toArray(), ["email", "password"]);
 
         $credentials = request(array_keys($fields));
@@ -181,12 +185,14 @@ class AuthController extends Controller
 
                     Log::info(json_encode($response->mail));
 
-                    unset($request->register_type);
-                    unset($request->referred_by);
-                    unset($request->name);
+                    // unset($request->register_type);
+                    // unset($request->referred_by);
+                    // unset($request->name);
 
                     $request = new LoginRequest();
                     $data = $this->login($request, true);
+
+                    log::info(json_encode($data));
                     $response = $Response::set(["message" => "Registration successful", "data" =>  $data], true);
                 } catch (\Exception $th) {
                     throw $th;
