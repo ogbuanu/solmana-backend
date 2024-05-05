@@ -33,7 +33,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string',
             'email' => 'required|email',
-            'password' => 'required|min:8',
+            'password' => 'min:8',
             'referred_by' => 'nullable|min:8',
             'register_type' => 'required|string'
         ];
