@@ -72,7 +72,6 @@ class AuthController extends Controller
 
         $Response = new Response();
         $response = $Response::get();
-
         if (isset($request->login_type)) {
             if ($request->login_type !== "" && $request->login_type == "twitter") {
                 $request->merge(['password' => config('variables.defaultPassword')]);
@@ -84,25 +83,32 @@ class AuthController extends Controller
             $response = $Response::set(["message" => "password is required"], true);
         }
 
-        $fields = array_extract($request->toArray(), ["email", "password"]);
-
         $credentials = $request->only(['email', 'password']);
-
         $user = User::where("email", "=", $credentials["email"])->first();
+
+        log::info("user", (array)$user);
+
         if (auth()->attempt($credentials)) {
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            print_r(json_encode($token));
 
             $response->status = true;
             $response->message = "Successful";
             $response->code = $this->response->success;
             $user = auth()->user();
+
+            print_r(json_encode($user));
+
             $response->data = ["user" => $user, "auth" => $this->respondWithToken($token)];
         } else {
             $response->message = "Incorrect email or password";
             $response->code = $this->response->unauthorized;
         }
 
+        print_r(json_encode($response->data));
+        print_r(json_encode($response->message));
         if ($internal) return $response->data;
         else  return response()->json($response,  $response->code);
     }
@@ -112,6 +118,8 @@ class AuthController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $tokenFor = object(config('variables.tokenFor'));
+
+        $allRegisterRequestData = (object) $request->all();
 
         if (isset($request->register_type)) {
             if ($request->register_type !== "" && $request->register_type == "twitter") {
@@ -184,16 +192,15 @@ class AuthController extends Controller
                         new VerifyMail($details)
                     );
 
-                    Log::info(json_encode($response->mail));
-
-                    // unset($request->register_type);
-                    // unset($request->referred_by);
-                    // unset($request->name);
-
                     $request = new LoginRequest();
+                    if (
+                        isset($allRegisterRequestData->register_type) && $allRegisterRequestData->register_type == "twitter"
+                    ) {
+                        $request->merge(['password' => $allRegisterRequestData->password, "email" => $data->email, "login_type" => $allRegisterRequestData->register_type]);
+                    } else {
+                        $request->merge(['password' => $allRegisterRequestData->password, "email" => $data->email]);
+                    };
 
-
-                    $request->merge(['password' => $data->password, "email" => $data->email]);
 
                     $data = $this->login($request, true);
 

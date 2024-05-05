@@ -22,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        ActionPoint::observe(PointObserver::class);
+        // ActionPoint::observe(PointObserver::class);
     }
 }
