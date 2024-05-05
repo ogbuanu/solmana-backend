@@ -80,7 +80,7 @@ class AuthController extends Controller
             unset($request->login_type);
         }
 
-        if ($request->password == "" && !isset($request->login_type)) {
+        if ($request->password == "" && $request->login_type !== "twitter") {
             $response = $Response::set(["message" => "password is required"], true);
         }
 
