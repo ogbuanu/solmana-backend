@@ -188,7 +188,7 @@ class AuthController extends Controller
                         'link' => $creator_email_link
                     ];
 
-                    $response->mail = Mail::to($creator->email)->queue(
+                    $response->mail = Mail::to($creator->email)->send(
                         new VerifyMail($details)
                     );
 
