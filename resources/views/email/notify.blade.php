@@ -4,7 +4,8 @@
 <tr style="display: flex;">
   <td style="margin-top: 56px;">
     <div style="font-weight: 300; font-size:16px; ">
-      Hi {{$to_name}},
+      Hi  {{ucfirst($to_name)}},
+     
       <br />
       <br />
       <span>

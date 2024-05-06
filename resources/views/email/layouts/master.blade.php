@@ -7,6 +7,7 @@
       font-family: "Open Sans";
     }
   </style>
+
   <div style="width: 100%; min-width: 480px; max-width:670px; margin: 0 auto; min-height: 300px; background-color: white; padding:32px">
     <table style="margin:24px">
       <tbody style="width: 100%;">
@@ -14,7 +15,9 @@
           <td>
             <div>
               <a href="{{config("app.app_link")}}">
-                <img src="{{config("app.logo")}}" width="150px" />
+                <img 
+                src='{{ $message->embed(public_path().'/logos/solmanaLogo.png') }}'
+                alt="solmana logo" width="150px" />
               </a>
             </div>
           </td>
@@ -44,30 +47,39 @@
           <td style="margin-top: 36px;width:100%">
             <div>
               <a href="{{config('app.app_link')}}">
-                <img src="{{config("app.logo")}}" width="100px" />
+                <img  
+                src='{{ $message->embed(public_path().'/logos/solmanaLogo.png') }}'
+                alt="solmana Logo"  width="100px" />               
               </a>
             </div>
           </td>
           <td style="margin-top: 36px;width:100%">
             <div style="font-weight: 300; font-size:16px; ; display:flex;justify-content: flex-end;gap: 20px;">
               <div style="width: 40px;">
-                <a href="https://twitter.com/Paidby_app">
+                <a href="https://twitter.com/SolmanaLaunch">
                 {{-- <img src="{{$host}}/assets/images/twitter.png" width="24px" /> --}}
+                <img src='{{ $message->embed(public_path().'/logos/x.png') }}'
+                alt="twitter" width="24px" />
+                
               </a>
               </div>
               <div style="width: 40px;">
-                <a href="https://www.linkedin.com/company/paidby/">
+                <a href="https://discord.com/invite/w48G4RzJZg">
+                  <img src='{{ $message->embed(public_path().'/logos/discord.png') }}'
+                   alt="discord" width="24px" />
                   {{-- <img src="{{$host}}/assets/images/linkedin.png" width="24px" /> --}}
                 </a>
               </div>
               <div style="width: 40px;">
-                <a href="https://instagram.com/paidby.app">
+                <a href="https://t.me/Solmana_launchpad">
+                  <img src='{{ $message->embed(public_path().'/logos/telegram-logo.png') }}'
+                   alt="telegram" width="24px" />
                 {{-- <img src="{{$host}}/assets/images/instagram.png" width="24px" /> --}}
               </a>
             </div>
             <div style="width: 40px;">
-              <a href="https://youtube.com/@paidby">
-              {{-- <img src="{{$host}}/assets/images/youtube.png" width="24px" /> --}}
+              <a href="https://solmanalaunchpad.medium.com/">
+               <img src='{{ $message->embed(public_path().'/logos/medium.png') }}' alt="telegram" width="24px" />
             </a>
           </div>
           </td>
