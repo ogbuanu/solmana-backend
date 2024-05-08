@@ -13,6 +13,7 @@ use App\Models\TaskLogs;
 use App\Models\TokenVerification;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\env;
@@ -129,7 +130,6 @@ class AuthController extends Controller
             try {
                 // Validate email
                 if (filter_var($fields->email, FILTER_VALIDATE_EMAIL)) {
-
                     //  validate passowrd
                     $isValidPassword = $this->validatePassword($fields->password);
                     if ($isValidPassword === true) {
@@ -143,7 +143,6 @@ class AuthController extends Controller
                                     $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
                                     if ($referralCodeIsValid) {
                                         $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                                        $referral->balance += 10;
                                         $referral->last_referral = Carbon::now();
                                         $referral->save();
                                     } else {
@@ -272,12 +271,26 @@ class AuthController extends Controller
                     $tokenExpiration = Carbon::parse($tokenVerifi->expires_at);
                     $tokenHasExpired = Carbon::now()->gt($tokenExpiration);
 
+
+                    $user =  User::where('email', $data->email)->first();
+
                     if ($tokenVerifi && $tokenHasExpired) {
                         $tokenVerifi->status = "USED";
                         $tokenVerifi->save();
-                        User::where('email', $data->email)->update(['email_verified_at' =>  $currentDateTime]);
+                        $user = User::where('email', $data->email)->first();
+                        if ($user->email_verified_at === null || $user->email_verified_at === "") {
+                            $user->email_verified_at =  $currentDateTime;
+                            $user->save();
 
-                        $response = $Response::set(["message" => "Email verified successfully", "data" =>  $data], true);
+                            if (isset($user->referred_by) && $user->referred_by !== "") {
+                                $referedUser =  User::where('referral_code', $user->referred_by)->first();
+
+                                ActionPoint::where("user_id", $referedUser->id)->update(["balance" => DB::raw('balance + 10')]);
+                            }
+                            $response = $Response::set(["message" => "Email verified successfully", "data" =>  $data], true);
+                        } else {
+                            $response = $Response::set(["message" => "Email is already verified", "data" =>  $data], true);
+                        }
                     } else  $response->message = "Invalid email verification link";
                 } else $response->message = "Invalid email type";
             } catch (\Throwable $th) {
