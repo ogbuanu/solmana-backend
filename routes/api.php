@@ -14,7 +14,7 @@ Route::get('/user', function (Request $request) {
 
 
 
-Route::get('/test', [AuthController::class, 'test'] );
+Route::get('/test', [AuthController::class, 'test']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,11 +24,15 @@ Route::get('/request-email', [AuthController::class, 'requestEmail'])->middlewar
 Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/user-details', [UserController::class, 'userDetails'])->middleware('auth:sanctum');
+
+
+
+Route::post('/add-wallet-address', [UserController::class, 'addWalletAddress'])->middleware('auth:sanctum');
 Route::get('/kyc-daily-update', [UserController::class, 'kycDailyUpdate']);
-Route::post('/user-kyc',[UserController::class, 'userkyc']);
+Route::post('/user-kyc', [UserController::class, 'userkyc']);
 
 
-Route::post('/verify-tweet',[UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
+Route::post('/verify-tweet', [UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
 
 
 Route::get('/cleareverything', function () {
