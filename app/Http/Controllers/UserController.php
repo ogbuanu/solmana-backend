@@ -34,6 +34,10 @@ class UserController extends Controller
       $userId = auth()->user()->id;
       $user = User::where('id', $userId)->with('actionPoint')->first();
 
+      $number_referral = User::where("referred_by", $user->referral_code)->count();
+
+      $user['number_referral'] = $number_referral;
+
       if ($user) {
         $response = $Response::set(["data" => $user], true);
       } else  $response = $Response::set(["message" => "user record is empty"], false);
