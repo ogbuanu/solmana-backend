@@ -303,7 +303,7 @@ class UserController extends Controller
       $user = User::where('id', $userId)->with('actionPoint')->first();
 
       if (empty($user["actionPoint"]['wallet_address'])) {
-        ActionPoint::where("user_id", $userId)->update(["wallet_address" => $data->wallet_address]);
+        ActionPoint::where("user_id", $userId)->update(["wallet_address" => $data->wallet_address, 'balance' => \DB::raw('balance + 50')]);
         $response = $Response::set(["message" => "User's wallet address added successfully"], true);
       } else {
         $response = $Response::set(["message" => "User wallet address is already added"], true);
