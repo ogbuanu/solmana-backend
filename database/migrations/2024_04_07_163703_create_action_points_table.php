@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('action_points', function (Blueprint $table) {
             $tireLevel = config("data.tireLevel");
-
             $table->uuid("id")->primary();
             $table->foreignUuid('user_id');
             $table->integer('balance')->default(0);
