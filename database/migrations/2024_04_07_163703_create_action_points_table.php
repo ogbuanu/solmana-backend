@@ -17,9 +17,8 @@ return new class extends Migration
             $table->foreignUuid('user_id');
             $table->integer('balance')->default(0);
             $table->integer('verified_tweets')->default(0);
-            $table->string('last_tweet')->nullable();
-            $table->string('last_kyc_earning')->nullable();
-            $table->string('last_referral')->nullable();
+            $table->dateTime('last_tweet')->nullable();
+            $table->dateTime('last_kyc_earning')->nullable();
             $table->longText('wallet_address')->nullable();
             $table->enum('tire_level', array_values($tireLevel))->default(object($tireLevel)->none);
             $table->timestamps();

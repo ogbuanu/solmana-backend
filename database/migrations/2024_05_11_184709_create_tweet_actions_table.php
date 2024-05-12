@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tweet_actions', function (Blueprint $table) {
-            $approvalStatus = config("data.approvalStatus");
+            $approvalStatus = config("data.approval");
             $table->uuid("id")->primary();
             $table->uuid("user_id");
             $table->longText('tweet_link');

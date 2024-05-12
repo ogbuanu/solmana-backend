@@ -8,19 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActionPoint extends Model
 {
-    use HasFactory,HasUuids;
+    use HasFactory, HasUuids;
     use  HasUuids;
 
-        protected $fillable = [
+    protected $fillable = [
         'user_id',
         'balance',
         'verified_tweets',
         'last_tweet',
         'last_kyc_earning',
-        'last_referral',
+
     ];
 
-   public function user()
+    public function user()
     {
         return $this->belongsTo(User::class, 'id', 'user_id');
     }
@@ -29,4 +29,11 @@ class ActionPoint extends Model
     // {
     //     return $this->belongsTo(User::class);
     // }
+    public function addPoint($type = 'tweet')
+    {
+        if ($type == 'tweet') {
+            $this->balance += 10;
+            // $this->save();
+        }
+    }
 }

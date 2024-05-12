@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 
 use App\Observers\PointObserver;
 use App\Models\ActionPoint;
+use App\Models\SocialAction;
+use App\Models\TweetAction;
+use App\Observers\TweetActionObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ActionPoint::observe(PointObserver::class);
+        TweetAction::observe(TweetActionObserver::class);
+        SocialAction::observe(TweetActionObserver::class);
     }
 }
