@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('action_points', function (Blueprint $table) {
             $tireLevel = config("data.tireLevel");
-
             $table->uuid("id")->primary();
             $table->foreignUuid('user_id');
             $table->integer('balance')->default(0);
             $table->integer('verified_tweets')->default(0);
-            $table->string('last_tweet')->nullable();
-            $table->string('last_kyc_earning')->nullable();
-            $table->string('last_referral')->nullable();
+            $table->timestamp('last_tweet')->nullable();
+            $table->timestamp('last_kyc_earning')->nullable();
             $table->longText('wallet_address')->nullable();
             $table->enum('tire_level', array_values($tireLevel))->default(object($tireLevel)->none);
             $table->timestamps();

@@ -44,5 +44,5 @@ return ([
     "better" => "BETTER",
     "best" => "BEST",
     "rich" => "RICH"
-  ]
+  ],
 ]);

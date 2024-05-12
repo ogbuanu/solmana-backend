@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Abraham\TwitterOAuth\TwitterOAuth;
+use App\Models\SocialAction;
+use App\Models\TweetAction;
 use Illuminate\Support\Facades\Http;
 use Atymic\Twitter\Facade\Twitter;
 
@@ -27,16 +29,17 @@ class UserController extends Controller
 
     $Response = new Response();
     $response = $Response::get();
-    $tokenFor = object(config('variables.tokenFor'));
-    $data = (object)$request->all();
+
 
     try {
       $userId = auth()->user()->id;
       $user = User::where('id', $userId)->with('actionPoint')->first();
 
       $number_referral = User::where("referred_by", $user->referral_code)->count();
-
+      $social_action = SocialAction::where("user_id", $user->id)->where("status", "APPROVED")->first();
       $user['number_referral'] = $number_referral;
+      $user['daily_tweet_pending'] = $user['actionPoint']['is_pending'] == "TRUE" ? true : false;
+      $user['has_followed_socials'] = $social_action ? true : false;
 
       if ($user) {
         $response = $Response::set(["data" => $user], true);
@@ -84,7 +87,7 @@ class UserController extends Controller
   {
     $Response = new Response();
     $response = $Response::get();
-    $data = (object)$request->all();
+    $data = (object) $request->all();
 
     try {
       $secretKey = config('services.blockpass.secret_key');
@@ -169,106 +172,14 @@ class UserController extends Controller
   {
     $Response = new Response();
     $response = $Response::get();
-    $data = (object)$request->all();
-    $key =  env('TWITTER_CONSUMER_KEY');
-
-    $consumer_key = "WZbMssxskLYLqkq7GIl8Jhguq";
-    $consumer_secret = "Wd4dXLQySBXZdYrLCZuaRBfdkqy0wRBPLgTerJ8geQrvaYDJtI";
-    $access_token = "1076644233480683526-flIHl6J8M1MGbbGqR1J8hNvXfr84f8";
-    $access_token_secret = "GbamxnoicZlcX0GekkUwWiOp5rNxQkT7trTVDGcf53H76";
-
-    $tweetBearer = "AAAAAAAAAAAAAAAAAAAAAB5WtQEAAAAAXK%2BqVYFW3guPKwe3jQX8QAc82kQ%3D60eXjtJtDebLVoEl70KfhERn0ijv48NFX9e26GTVi4Gv8aX8yk";
+    $data = (object) $request->all();
 
     try {
       $user = auth()->user();
       if (isset($data->tweet_link) && $data->tweet_link != null) {
-        $parts = explode("/", $data->tweet_link);
-        $tweetId = end($parts);
 
-        $tweetId = "1780107798908440863";
-
-
-
-
-
-
-        print_r($key);
-
-        //   $connection = new TwitterOAuth(
-        //     $twitterConsumerKey,
-        //     $twitterConsumerSecret,
-        //     $twitterAccessToken,
-        //     $twitterAccessTokenSecret
-        // );
-
-
-        $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
-
-        $connection->setApiVersion('2');
-
-
-        $tweets = $connection->get("status/show", ['id' => $tweetId,]);
-
-
-        print_r($tweets);
-        dd($tweets);
-
-
-
-
-        // https://api.twitter.com/2/tweets/$tweetId
-        // $response = $connection->get("statuses/show", [
-        //     'id' => $tweetId,
-        // ]);
-
-        // dd($response);
-
-        // if (isset($response->errors)) {
-        //     // Handle errors returned by Twitter API
-        //     return response()->json([
-        //         'message' => 'Failed to retrieve tweet: ' . $response->errors[0]->message,
-        //     ], $response->http_code);
-        // }
-
-        // return response()->json($response);
-
-        // 
-        //  $respon = Http::withheaders(["authorization"=> "Bearer" . $tweetBearer])
-        //   ->get("https://api.twitter.com/2/tweets/$tweetId");
-
-        //            dd($respon);
-
-        // if ($response->successful()) {
-        //     $data = $response->json();
-        //     return response()->json($data);
-        // }
-
-        // Handle specific error codes (e.g., 401, 403)
-        // return $this->handleErrorResponse($response);
-
-
-
-        //             $consumerKey = env('TWITTER_CONSUMER_KEY');
-        // $consumerSecret = env('TWITTER_CONSUMER_SECRET');
-
-        // Validate credentials (optional)
-
-
-        // $encodedCredentials = base64_encode("$twitterConsumerKey:$twitterConsumerSecret");
-
-
-        //     $respse = Http::withBasicAuth('', $encodedCredentials)
-        //         ->get("https://api.twitter.com/2/tweets/$tweetId");
-
-        //   dd($respse);
-
-
-
-        //  if ($response->ok()) {
-        //  ActionPoint::where('user_id',$user->id)->update([
-        //  'balance' => \DB::raw('balance + 10'),
-        //  ]);
-        // $data =  $res;
+        TweetAction::create(["user_id" => $user->id, "tweet_link" => $data->tweet_link]);
+        ActionPoint::where(["user_id" => $user->id])->update(["is_pending" => "TRUE"]);
         $response = $Response::set(["message" => "kyc Daily Update rain successfully"], true);
         // } else $response = $Response::set(["message" => $res?->message], false);
       } else $response = $Response::set(["message" => "tweet link is required"], false);
@@ -280,6 +191,27 @@ class UserController extends Controller
     return response()->json($response,  $response->code);
   }
 
+  public function verifySocialFollow(Request $request)
+  {
+    $Response = new Response();
+    $response = $Response::get();
+    $data = (object) $request->all();
+
+    try {
+      $user = auth()->user();
+      if (isset($data->proof_img) && $data->proof_img != null) {
+
+        SocialAction::create(["user_id" => $user->id, "proof_img" => $data->proof_img]);
+        $response = $Response::set(["message" => "Task submitted successfully"], true);
+        // } else $response = $Response::set(["message" => $res?->message], false);
+      } else $response = $Response::set(["message" => "img proof is required"], false);
+    } catch (\Throwable $th) {
+      $response = $Response::set(["message" => "{$th->getMessage()}"], false);
+    } catch (\Exception $e) {
+      $response = $Response::set(["message" => "{$e->getMessage()}"], false);
+    }
+    return response()->json($response,  $response->code);
+  }
 
   public function kyc(Request $request)
   {
@@ -292,7 +224,7 @@ class UserController extends Controller
     $Response = new Response();
     $response = $Response::get();
 
-    $data = (object)$request->all();
+    $data = (object) $request->all();
 
     $userId = auth()->user()->id;
 
