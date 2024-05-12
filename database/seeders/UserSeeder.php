@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,8 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'office@solmana.org',
             'password' => Hash::make('SolmanaAdmin123!'),
-            'role' => 'admin',
+            'role' => 'ADMIN',
+            'referral_code' => "ADMIN100"
         ]);
     }
 }

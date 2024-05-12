@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -33,7 +34,15 @@ Route::post('/user-kyc', [UserController::class, 'userkyc']);
 
 
 Route::post('/verify-tweet', [UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
+Route::post('/verify-social-follow', [UserController::class, 'verifySocialFollow'])->middleware('auth:sanctum');
 
+Route::group(['middleware' => 'auth:sanctum'], function () {
+
+    Route::get('/fetch-tweet-action', [AdminController::class, 'fetchTweetActions']);
+    Route::get('/fetch-social-action', [AdminController::class, 'fetchSocialActions']);
+    Route::post('/update-tweet-action', [AdminController::class, 'updateTweetAction']);
+    Route::post('/update-social-action', [AdminController::class, 'updateSocialAction']);
+});
 
 Route::get('/cleareverything', function () {
     $clearcache = Artisan::call('cache:clear');
