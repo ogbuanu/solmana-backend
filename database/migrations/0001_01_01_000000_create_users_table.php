@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $bool = config('variables.bool');
+            $userType = config('data.userType');
             $table->uuid("id")->primary();
             $table->string('name');
             $table->string('referral_code');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', array_values($userType))->default(object($userType)->user);
             $table->enum('kyc_verified', array_values($bool))->default('FALSE');
             $table->timestamp('kyc_verified_at')->nullable();
             $table->enum('kyc_status', ['PENDING', 'APPROVED', 'REJECTED'])->default('PENDING');

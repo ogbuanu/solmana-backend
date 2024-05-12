@@ -283,7 +283,7 @@ class AuthController extends Controller
                             $user->save();
 
                             if (isset($user->referred_by) && $user->referred_by !== "") {
-                                $referedUser =  User::where('referral_code', $user->referred_by)->first();
+                                $referedUser =  User::where('id', $user->referred_by)->first();
 
                                 ActionPoint::where("user_id", $referedUser->id)->update(["balance" => DB::raw('balance + 10')]);
                                 // ActionPoint::whereIn("user_id", [$referedUser->id, $user->id])->update(['balance' => \DB::raw('balance + 10')]);
@@ -351,7 +351,7 @@ class AuthController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $tokenFor = object(config('variables.tokenFor'));
-        $data = (object)$request->all();
+        $data = (object) $request->all();
 
         $required = ["email"];
         $fields = object(array_extract($request->toArray(), $required, true));
