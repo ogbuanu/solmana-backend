@@ -136,47 +136,41 @@ class AuthController extends Controller
                         // Check if user already exists
                         if (!User::where("email", $fields->email)->exists()) {
                             try {
-
+                                // generate referral code for this user
                                 $data->referral_code =  self::generateReferralCode();
-
+                                // check if referred_by isset and is not empty
                                 if (isset($data->referred_by) && $data->referred_by !== "") {
-                                    $referralCodeIsValid = User::where("referral_code", $data->referred_by)->first();
-                                    if ($referralCodeIsValid) {
-                                        $referral = ActionPoint::where("user_id", $referralCodeIsValid->id)->first();
-                                        $referral->last_referral = Carbon::now();
-                                        $referral->save();
-                                    } else {
+                                    // getting the referral from the database
+                                    $referralCodeValid = User::where("referral_code", $data->referred_by)->first();
+                                    // check if referred_by is valid referral code 
+                                    if (empty($referralCodeValid)) {
                                         $data->referred_by = null;
-                                    };
+                                    }
                                 }
-
                                 // hash password
                                 $data->password = app("hash")->make($data->password);
-
                                 $creator = User::create(toArray($data));
-
                                 ActionPoint::create(["user_id" => $creator->id]);
 
                                 // Send Mails
-
                                 $creator_name = $creator->name;
-
                                 $now = Carbon::now();
 
+                                // getting token expiration time
                                 $TokenExpiresInMinutes = config('variables.TokenExpiresInMinutes');
                                 $TokenExpires = $now->addMinutes($TokenExpiresInMinutes);
 
-
-                                // Send the creator an email verification link if his email is still unverified
+                                // creating email verification token
                                 $token = TokenVerification::create([
                                     "token_for" => $tokenFor->emailVerification,
                                     "email" =>  $creator->email,
                                     "expires_at" =>  $TokenExpires
                                 ]);
 
+                                // link build up
                                 $creator_email_link = config('app.app_link') . "/verify-token/{$token->id}";
 
-
+                                // Send the creator an email verification link if his email is still unverified
                                 $details = [
                                     'subject' => "Email Verification",
                                     'from' => env("APP_EMAIL"), 'to' => $creator->email,
@@ -184,7 +178,7 @@ class AuthController extends Controller
                                     'template' => 'verify',
                                     'link' => $creator_email_link
                                 ];
-
+                                //  send mail 
                                 $response->mail  = Mail::to($creator->email)->send(
                                     new VerifyMail($details)
                                 );
@@ -274,19 +268,17 @@ class AuthController extends Controller
 
                     $user =  User::where('email', $data->email)->first();
 
-                    if ($tokenVerifi && $tokenHasExpired) {
+                    if (!empty($tokenVerifi) && $tokenHasExpired) {
                         $tokenVerifi->status = "USED";
                         $tokenVerifi->save();
 
-                        if ($user->email_verified_at === null || $user->email_verified_at === "") {
+                        if ($user->email_verified_at == null) {
                             $user->email_verified_at =  $currentDateTime;
                             $user->save();
 
-                            if (isset($user->referred_by) && $user->referred_by !== "") {
-                                $referedUser =  User::where('id', $user->referred_by)->first();
-
+                            if ($user->referred_by !== "") {
+                                $referedUser =  User::where('referral_code', $user->referred_by)->first();
                                 ActionPoint::where("user_id", $referedUser->id)->update(["balance" => DB::raw('balance + 10')]);
-                                // ActionPoint::whereIn("user_id", [$referedUser->id, $user->id])->update(['balance' => \DB::raw('balance + 10')]);
                             }
                             $response = $Response::set(["message" => "Email verified successfully", "data" =>  $data], true);
                         } else {
