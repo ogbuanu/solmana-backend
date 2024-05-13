@@ -36,7 +36,7 @@ Route::post('/user-kyc', [UserController::class, 'userkyc']);
 Route::post('/verify-tweet', [UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
 Route::post('/verify-social-follow', [UserController::class, 'verifySocialFollow'])->middleware('auth:sanctum');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'admin'], function () {
 
     Route::get('/fetch-tweet-action', [AdminController::class, 'fetchTweetActions']);
     Route::get('/fetch-social-action', [AdminController::class, 'fetchSocialActions']);
