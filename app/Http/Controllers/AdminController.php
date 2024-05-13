@@ -17,7 +17,11 @@ class AdminController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $data = [];
+        $user = auth()->user();
         try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
             $data['pending_tweet_action'] = TweetAction::where('status', "PENDING")->get();
             $data['approved_tweet_action'] = TweetAction::where('status', " APPROVED")->get();
             $data['rejected_tweet_action'] = TweetAction::where('status', "REJECTED")->get();
@@ -32,14 +36,18 @@ class AdminController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function TweetAction(Request $request)
+    public function updateTweetAction(Request $request)
     {
         //
         $Response = new Response();
         $response = $Response::get();
         $data = (object) $request->all();
         $approvalStatus = config('variables.approvalStatus');
+        $user = auth()->user();
         try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
             if (isset($data->action) && $data->action != null && isset($data->id) && $data->id != null) {
                 $tweet = TweetAction::find($data->id);
                 if ($tweet) {
@@ -64,7 +72,11 @@ class AdminController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $data = [];
+        $user = auth()->user();
         try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
             $data['pending_social_action'] = SocialAction::where('status', "PENDING")->get();
             $data['approved_social_action'] = SocialAction::where('status', " APPROVED")->get();
             $data['rejected_social_action'] = SocialAction::where('status', "REJECTED")->get();
@@ -79,7 +91,7 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function socialAction(Request $request)
+    public function updateSocialAction(Request $request)
     {
         //
         //
@@ -87,7 +99,11 @@ class AdminController extends Controller
         $response = $Response::get();
         $data = (object) $request->all();
         $approvalStatus = config('variables.approvalStatus');
+        $user = auth()->user();
         try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
             if (isset($data->action) && $data->action != null && isset($data->id) && $data->id != null) {
                 $social = SocialAction::find($data->id);
                 if ($social) {
