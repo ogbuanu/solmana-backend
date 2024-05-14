@@ -272,11 +272,11 @@ class AuthController extends Controller
                         $tokenVerifi->status = "USED";
                         $tokenVerifi->save();
 
-                        if ($user->email_verified_at == null) {
+                        if (empty($user->email_verified_at)) {
                             $user->email_verified_at =  $currentDateTime;
                             $user->save();
 
-                            if ($user->referred_by !== "") {
+                            if (!empty($user->referred_by)) {
                                 $referedUser =  User::where('referral_code', $user->referred_by)->first();
                                 ActionPoint::where("user_id", $referedUser->id)->update(["balance" => DB::raw('balance + 10')]);
                             }
