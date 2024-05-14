@@ -1,7 +1,7 @@
 @extends('email.layouts.master')
 @section('content')
 <tr style="display: flex;">
-  <td style="margin-top: 56px;">
+  <td style="margin-top: 46px;">
     <div style="font-weight: 300; font-size:16px; ">
       Hi {{ucfirst($to_name)}},
 
