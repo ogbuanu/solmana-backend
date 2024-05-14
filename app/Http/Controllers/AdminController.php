@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SocialAction;
+use App\Models\TweetAction;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
