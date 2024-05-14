@@ -10,10 +10,10 @@ class PointObserver
     /**
      * Handle the ActionPoint "created" event.
      */
-    public function created(ActionPoint $actionPoint): void
-    {
-        //
-    }
+    // public function created(ActionPoint $actionPoint): void
+    // {
+    //     //
+    // }
 
     /**
      * Handle the ActionPoint "updated" event.
@@ -25,27 +25,27 @@ class PointObserver
 
     /**
      * Handle the ActionPoint "deleted" event.
-     */
-    public function deleted(ActionPoint $actionPoint): void
-    {
-        //
-    }
+    //  */
+    // public function deleted(ActionPoint $actionPoint): void
+    // {
+    //     //
+    // }
 
-    /**
-     * Handle the ActionPoint "restored" event.
-     */
-    public function restored(ActionPoint $actionPoint): void
-    {
-        //
-    }
+    // /**
+    //  * Handle the ActionPoint "restored" event.
+    //  */
+    // public function restored(ActionPoint $actionPoint): void
+    // {
+    //     //
+    // }
 
-    /**
-     * Handle the ActionPoint "force deleted" event.
-     */
-    public function forceDeleted(ActionPoint $actionPoint): void
-    {
-        //
-    }
+    // /**
+    //  * Handle the ActionPoint "force deleted" event.
+    //  */
+    // public function forceDeleted(ActionPoint $actionPoint): void
+    // {
+    //     //
+    // }
 
     protected function updateTireLevel(ActionPoint $actionPoint)
     {
