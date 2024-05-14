@@ -17,7 +17,7 @@
               <a href="{{config("app.app_link")}}">
                 <img 
                 src='{{ $message->embed(public_path().'/logos/solmanaLogo.png') }}'
-                alt="solmana logo" width="150px" />
+                alt="solmana logo" width="70px" />
               </a>
             </div>
           </td>
@@ -26,7 +26,7 @@
           @yield('content')
 
         <tr style="display: flex;">
-          <td style="margin-top: 36px;">
+          <td style="margin-top: 30px;">
             <div style="font-weight: 300; font-size:16px; ">Thanks, <br> {{config("app.name")}} team.</div>
           </td>
         </tr>
@@ -49,7 +49,7 @@
               <a href="{{config('app.app_link')}}">
                 <img  
                 src='{{ $message->embed(public_path().'/logos/solmanaLogo.png') }}'
-                alt="solmana Logo"  width="100px" />               
+                alt="solmana Logo"  width="40px" />               
               </a>
             </div>
           </td>
