@@ -43,7 +43,7 @@ class AdminController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $data = (object) $request->all();
-        $approvalStatus = config('variables.approvalStatus');
+        $approvalStatus = config('data.approval');
         $user = auth()->user();
         try {
             if ($user->role != "ADMIN") {
@@ -99,7 +99,7 @@ class AdminController extends Controller
         $Response = new Response();
         $response = $Response::get();
         $data = (object) $request->all();
-        $approvalStatus = config('variables.approvalStatus');
+        $approvalStatus = config('data.approval');
         $user = auth()->user();
         try {
             if ($user->role != "ADMIN") {
