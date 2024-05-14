@@ -11,10 +11,10 @@ class TweetActionObserver
     /**
      * Handle the TweetAction "created" event.
      */
-    public function created(TweetAction $tweetAction): void
-    {
-        //
-    }
+    // public function created(TweetAction $tweetAction): void
+    // {
+    //     //
+    // }
 
     /**
      * Handle the TweetAction "updated" event.
@@ -36,24 +36,24 @@ class TweetActionObserver
     /**
      * Handle the TweetAction "deleted" event.
      */
-    public function deleted(TweetAction $tweetAction): void
-    {
-        //
-    }
+    // public function deleted(TweetAction $tweetAction): void
+    // {
+    //     //
+    // }
 
     /**
      * Handle the TweetAction "restored" event.
      */
-    public function restored(TweetAction $tweetAction): void
-    {
-        //
-    }
+    // public function restored(TweetAction $tweetAction): void
+    // {
+    //     //
+    // }
 
     /**
      * Handle the TweetAction "force deleted" event.
      */
-    public function forceDeleted(TweetAction $tweetAction): void
-    {
-        //
-    }
+    // public function forceDeleted(TweetAction $tweetAction): void
+    // {
+    //     //
+    // }
 }

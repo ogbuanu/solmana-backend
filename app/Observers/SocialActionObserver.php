@@ -10,10 +10,10 @@ class SocialActionObserver
     /**
      * Handle the SocialAction "created" event.
      */
-    public function created(SocialAction $socialAction): void
-    {
-        //
-    }
+    // public function created(SocialAction $socialAction): void
+    // {
+    //     //
+    // }
 
     /**
      * Handle the SocialAction "updated" event.
@@ -31,24 +31,24 @@ class SocialActionObserver
     /**
      * Handle the SocialAction "deleted" event.
      */
-    public function deleted(SocialAction $socialAction): void
-    {
-        //
-    }
+    // public function deleted(SocialAction $socialAction): void
+    // {
+    //     //
+    // }
 
-    /**
-     * Handle the SocialAction "restored" event.
-     */
-    public function restored(SocialAction $socialAction): void
-    {
-        //
-    }
+    // /**
+    //  * Handle the SocialAction "restored" event.
+    //  */
+    // public function restored(SocialAction $socialAction): void
+    // {
+    //     //
+    // }
 
-    /**
-     * Handle the SocialAction "force deleted" event.
-     */
-    public function forceDeleted(SocialAction $socialAction): void
-    {
-        //
-    }
+    // /**
+    //  * Handle the SocialAction "force deleted" event.
+    //  */
+    // public function forceDeleted(SocialAction $socialAction): void
+    // {
+    //     //
+    // }
 }
