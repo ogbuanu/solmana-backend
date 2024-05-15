@@ -13,6 +13,7 @@ class TweetAction extends Model
         'user_id',
         'status',
         'tweet_link',
+        'id'
     ];
 
     public function user()

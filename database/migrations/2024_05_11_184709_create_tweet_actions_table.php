@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tweet_actions', function (Blueprint $table) {
             $approvalStatus = config("data.approval");
-            $table->uuid("id")->primary();
+            $table->id();
             $table->uuid("user_id");
             $table->longText('tweet_link');
             $table->enum('status', array_values($approvalStatus))->default(object($approvalStatus)->pending);
