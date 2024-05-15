@@ -79,7 +79,7 @@ class AdminController extends Controller
                 throw new \Exception("unauthorized access");
             }
             $data['pending_social_action'] = SocialAction::where('status', "PENDING")->get();
-            $data['approved_social_action'] = SocialAction::where('status', " APPROVED")->get();
+            $data['approved_social_action'] = SocialAction::where('status', "APPROVED")->get();
             $data['rejected_social_action'] = SocialAction::where('status', "REJECTED")->get();
             $response = $Response::set(["data" => $data], true);
         } catch (\Throwable $th) {
