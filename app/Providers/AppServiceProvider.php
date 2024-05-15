@@ -8,6 +8,7 @@ use App\Observers\PointObserver;
 use App\Models\ActionPoint;
 use App\Models\SocialAction;
 use App\Models\TweetAction;
+use App\Observers\SocialActionObserver;
 use App\Observers\TweetActionObserver;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         ActionPoint::observe(PointObserver::class);
         TweetAction::observe(TweetActionObserver::class);
-        SocialAction::observe(TweetActionObserver::class);
+        SocialAction::observe(SocialActionObserver::class);
     }
 }
