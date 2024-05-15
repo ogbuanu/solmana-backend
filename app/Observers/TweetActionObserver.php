@@ -26,7 +26,7 @@ class TweetActionObserver
             $actionPoint = ActionPoint::where('user_id', $tweetAction->user_id)->first();
             if ($tweetAction->status == "APPROVED") {
                 $actionPoint->balance += 10;
-                $actionPoint->last_tweeted = Carbon::now();
+                $actionPoint->last_tweet = Carbon::now();
             }
             $actionPoint->is_pending = "FALSE";
             $actionPoint->save();
