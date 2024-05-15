@@ -180,7 +180,7 @@ class UserController extends Controller
 
         TweetAction::create(["user_id" => $user->id, "tweet_link" => $data->tweet_link]);
         ActionPoint::where(["user_id" => $user->id])->update(["is_pending" => "TRUE"]);
-        $response = $Response::set(["message" => "kyc Daily Update rain successfully"], true);
+        $response = $Response::set(["message" => "Tweet has been posted!"], true);
         // } else $response = $Response::set(["message" => $res?->message], false);
       } else $response = $Response::set(["message" => "tweet link is required"], false);
     } catch (\Throwable $th) {

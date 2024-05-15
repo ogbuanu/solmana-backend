@@ -24,7 +24,7 @@ class AdminController extends Controller
                 throw new \Exception("unauthorized access");
             }
             $data['pending_tweet_action'] = TweetAction::where('status', "PENDING")->get();
-            $data['approved_tweet_action'] = TweetAction::where('status', " APPROVED")->get();
+            $data['approved_tweet_action'] = TweetAction::where('status', "APPROVED")->get();
             $data['rejected_tweet_action'] = TweetAction::where('status', "REJECTED")->get();
             $response = $Response::set(["data" => $data], true);
         } catch (\Throwable $th) {
