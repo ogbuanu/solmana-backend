@@ -29,11 +29,5 @@ class ActionPoint extends Model
     // {
     //     return $this->belongsTo(User::class);
     // }
-    public function addPoint($type = 'tweet')
-    {
-        if ($type == 'tweet') {
-            $this->balance += 10;
-            // $this->save();
-        }
-    }
+
 }

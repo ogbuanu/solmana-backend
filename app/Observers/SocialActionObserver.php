@@ -22,7 +22,7 @@ class SocialActionObserver
     {
         //
         if ($socialAction->wasChanged('status') && $socialAction->status == "APPROVED") {
-            $action = ActionPoint::where('id', $socialAction->id)->first();
+            $action = ActionPoint::where('user_id', $socialAction->user_id)->first();
             $action->balance += 10;
             $action->save();
         }
