@@ -32,15 +32,16 @@ return [
     ],
 
     'twitter' => [
-    'consumer_key' => env('TWITTER_CONSUMER_KEY'),
-    'consumer_secret' => env('TWITTER_CONSUMER_SECRET'),
-    'access_token' => env('TWITTER_ACCESS_TOKEN'),
-    'access_token_secret' => env('TWITTER_ACCESS_TOKEN_SECRET'),
-    "bearer_token" => env('TWITTER_BEARER_KEY'),
+        'consumer_key' => env('TWITTER_CONSUMER_KEY'),
+        'consumer_secret' => env('TWITTER_CONSUMER_SECRET'),
+        'access_token' => env('TWITTER_ACCESS_TOKEN'),
+        'access_token_secret' => env('TWITTER_ACCESS_TOKEN_SECRET'),
+        "bearer_token" => env('TWITTER_BEARER_KEY'),
     ],
 
-   'blockpass' => [
-    'secret_key' => "4ca88ba0-cf52-41b1-b4ab-03e650320258",
-   ],
+    'blockpass' => [
+        'secret_key' => env('BLOCK_PASS_SECRET'),
+        'webhook_secret_key' => env('BLOCK_PASS_WEBHOOK_SECRET'),
+    ],
 
 ];

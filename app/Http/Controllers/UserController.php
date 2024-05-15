@@ -90,7 +90,7 @@ class UserController extends Controller
     $data = (object) $request->all();
 
     try {
-      $secretKey = config('services.blockpass.secret_key');
+      $websecretKey = config('services.blockpass.webhook_secret_key');
       $webhookData = $request->getContent();
 
       Log::info(json_encode($webhookData));
@@ -99,7 +99,7 @@ class UserController extends Controller
 
       $receivedSignature = $request->header('X-Hub-Signature');
 
-      $expectedSignature = hash_hmac('sha256', $webhookData, $secretKey, true);
+      $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey, true);
       $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
 
 

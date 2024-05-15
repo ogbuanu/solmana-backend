@@ -30,7 +30,7 @@ Route::get('/user-details', [UserController::class, 'userDetails'])->middleware(
 
 Route::post('/add-wallet-address', [UserController::class, 'addWalletAddress'])->middleware('auth:sanctum');
 Route::get('/kyc-daily-update', [UserController::class, 'kycDailyUpdate']);
-Route::post('/user-kyc', [UserController::class, 'userkyc']);
+Route::post('/userkyc', [UserController::class, 'userkyc']);
 
 
 Route::post('/verify-tweet', [UserController::class, 'verifyTweet'])->middleware('auth:sanctum');
