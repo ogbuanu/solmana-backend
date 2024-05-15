@@ -20,7 +20,9 @@ class UserSeeder extends Seeder
             'email' => 'office@solmana.org',
             'password' => Hash::make('SolmanaAdmin123!'),
             'role' => 'ADMIN',
-            'referral_code' => "ADMIN100"
+            'referral_code' => "ADMIN100",
+            'email_verified_at' => now(),
+            'email_verified' => 'TRUE',
         ]);
     }
 }
