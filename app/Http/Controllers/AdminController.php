@@ -2,12 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActionPoint;
 use App\Models\SocialAction;
 use App\Models\TweetAction;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+
+
+    public function getStats()
+    {
+        $Response = new Response();
+        $response = $Response::get();
+        $data = [];
+        try {
+
+            $data['total_users'] =  User::all()->count();
+            $data['total_points_awarded'] = ActionPoint::all()->sum('balance');
+            $data['total_tweets_by_users'] = TweetAction::where('status', 'APPROVED')->count();
+            $data['total_kyc_verified_users'] = User::where('kyc_verified', 'TRUE')->count();
+            $response = $Response::set(['message' => 'success', 'data' => $data], true);
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            $response = $Response::set(['message' => $th->getMessage()], false);
+        }
+        return response()->json($response, $response->code);
+    }
     /**
      * Display a listing of the resource.
      */
