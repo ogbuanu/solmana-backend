@@ -93,8 +93,6 @@ class UserController extends Controller
       $websecretKey = config('services.blockpass.webhook_secret_key');
       $webhookData = $request->getContent();
 
-
-
       // $receivedSignature = $request->header('X-Signature');
 
       $receivedSignature = $request->header('X-Hub-Signature');
