@@ -90,32 +90,61 @@ class UserController extends Controller
     $response = $Response::get();
     $data = (object) $request->all();
 
+
+    $webhookData = $request->getContent(true);
+
+    Log::info($webhookData);
+
     try {
+      // $websecretKey = config('services.blockpass.secret_key');
+      // // $webhookData = $request->getContent();
+
+
+      // // $receivedSignature = $request->header('X-Signature');
+
+      // $receivedSignature = $request->header('X-Hub-Signature');
+      // Log::info("receivedSignature", $receivedSignature);
+
+      // $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey, true);
+      // Log::info("expectedSignature", $expectedSignature);
+
+      // $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
+
+      // Log::info("expectedSignatureEncoded", $expectedSignatureEncoded);
+
+      // Log::info("hash_equals", hash_equals($expectedSignatureEncoded, $receivedSignature));
+
+      // $log = hash_equals($expectedSignatureEncoded, $receivedSignature);
+
+      // Log::info($log);
+
       $websecretKey = config('services.blockpass.secret_key');
       $webhookData = $request->getContent();
-      Log::info("webhookData", $webhookData);
+      Log::info("webhookData", [$webhookData]);
 
-      // $receivedSignature = $request->header('X-Signature');
-
+      // Use correct header key based on Blockpass documentation
       $receivedSignature = $request->header('X-Hub-Signature');
-      Log::info("receivedSignature", $receivedSignature);
+      Log::info("receivedSignature", [$receivedSignature]);
 
-      $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey, true);
-      Log::info("expectedSignature", $expectedSignature);
+      // Calculate expected signature using hash_hmac with hex output
+      $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey);
+      Log::info("expectedSignature (hex)", [$expectedSignature]);
 
-      $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
+      // Ensure both signatures are trimmed of whitespace
+      $receivedSignature = trim($receivedSignature);
+      $expectedSignature = trim($expectedSignature);
 
-      Log::info("expectedSignatureEncoded", $expectedSignatureEncoded);
+      // Compare the signatures using hash_equals
+      $signatureMatch = hash_equals($expectedSignature, $receivedSignature);
+      Log::info("hash_equals result", [$signatureMatch]);
 
-      Log::info("hash_equals", hash_equals($expectedSignatureEncoded, $receivedSignature));
 
-
-      if (hash_equals($expectedSignatureEncoded, $receivedSignature)) {
+      if (hash_equals($expectedSignature, $receivedSignature)) {
         Log::info('Blockpass webhook verified successfully.');
 
         $now = Carbon::now();
 
-        if ($data->event === "user.approved") {
+        if ($data->event === "review.approved") {
           User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "TRUE", 'kyc_verified_at' => $now, "kyc_status" => 'APPROVED']);
           $kycEarning =  ActionPoint::where(["user_id" => $data->refId])->first();
 
