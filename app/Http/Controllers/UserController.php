@@ -85,6 +85,7 @@ class UserController extends Controller
 
   public function userkyc(Request $request)
   {
+    Log::info("webhook", $request->all());
     $Response = new Response();
     $response = $Response::get();
     $data = (object) $request->all();
