@@ -85,26 +85,30 @@ class UserController extends Controller
 
   public function userkyc(Request $request)
   {
-    Log::info("webhook", $request->all());
+
     $Response = new Response();
     $response = $Response::get();
     $data = (object) $request->all();
 
-    Log::info(json_encode($data));
-
     try {
       $websecretKey = config('services.blockpass.webhook_secret_key');
       $webhookData = $request->getContent();
-
-      Log::info(json_encode($webhookData));
+      Log::info("webhookData", $webhookData);
 
       // $receivedSignature = $request->header('X-Signature');
 
       $receivedSignature = $request->header('X-Hub-Signature');
+      Log::info("receivedSignature", $receivedSignature);
 
       $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey, true);
+      Log::info("expectedSignature", $expectedSignature);
 
       $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
+
+      Log::info("expectedSignatureEncoded", $expectedSignatureEncoded);
+
+      Log::info("hash_equals", hash_equals($expectedSignatureEncoded, $receivedSignature));
+
 
 
       if (hash_equals($expectedSignatureEncoded, $receivedSignature)) {
@@ -239,7 +243,7 @@ class UserController extends Controller
       $user = User::where('id', $userId)->with('actionPoint')->first();
 
       if (empty($user["actionPoint"]['wallet_address'])) {
-        ActionPoint::where("user_id", $userId)->update(["wallet_address" => $data->wallet_address, 'balance' => \DB::raw('balance + 50')]);
+        ActionPoint::where("user_id", $userId)->update(["wallet_address" => $data->wallet_address, 'balance' => \DB::raw('balance + 60')]);
         $response = $Response::set(["message" => "User's wallet address added successfully"], true);
       } else {
         $response = $Response::set(["message" => "User wallet address is already added"], true);
