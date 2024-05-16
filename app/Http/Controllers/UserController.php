@@ -96,41 +96,15 @@ class UserController extends Controller
     Log::info($webhookData);
 
     try {
-      // $websecretKey = config('services.blockpass.secret_key');
-      // // $webhookData = $request->getContent();
 
-
-      // // $receivedSignature = $request->header('X-Signature');
-
-      // $receivedSignature = $request->header('X-Hub-Signature');
-      // Log::info("receivedSignature", $receivedSignature);
-
-      // $expectedSignature = hash_hmac('sha256', $webhookData, $websecretKey, true);
-      // Log::info("expectedSignature", $expectedSignature);
-
-      // $expectedSignatureEncoded = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
-
-      // Log::info("expectedSignatureEncoded", $expectedSignatureEncoded);
-
-      // Log::info("hash_equals", hash_equals($expectedSignatureEncoded, $receivedSignature));
-
-      // $log = hash_equals($expectedSignatureEncoded, $receivedSignature);
-
-      // Log::info($log);
-
-      $websecretKey = config('services.blockpass.secret_key');
-
+      $websecretKey = config('services.blockpass.webhook_secret_key');
       Log::info("websecretKey", [$websecretKey]);
 
       $webhookData = $request->getContent();
       Log::info("webhookData", [$webhookData]);
 
       // Use correct header key based on Blockpass documentation
-
-      $receivedSignature = $request->header('X-Signature');
-
-      // $receivedSignature = $request->header('X-Hub-Signature');
-      // $receivedSignature = $request->header('X-Hub-Signature');
+      $receivedSignature = $request->header('X-Hub-Signature');
       Log::info("receivedSignature", [$receivedSignature]);
 
       // Calculate expected signature using hash_hmac with hex output
@@ -145,66 +119,39 @@ class UserController extends Controller
       $signatureMatch = hash_equals($expectedSignature, $receivedSignature);
       Log::info("hash_equals result", [$signatureMatch]);
 
+      // if (hash_equals($expectedSignature, $receivedSignature)) {
+      Log::info('Blockpass webhook verified successfully.');
 
-      if (hash_equals($expectedSignature, $receivedSignature)) {
-        Log::info('Blockpass webhook verified successfully.');
+      $now = Carbon::now();
+      $user = User::where('id', $data->refId)->first();
+      if (
+        $data->event == "review.approved" && !empty($user) && $user->kyc_status != 'APPROVED'
+      ) {
+        User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "TRUE", 'kyc_verified_at' => $now, "kyc_status" => 'APPROVED']);
 
-        $now = Carbon::now();
-
-
-        $user = User::where('id', $data->refId)->first();
-        if (
-          $data->event == "review.approved" && $user->kyc_status != 'APPROVED'
-        ) {
-          User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "TRUE", 'kyc_verified_at' => $now, "kyc_status" => 'APPROVED']);
-
-          $kycEarning =  ActionPoint::where(["user_id" => $data->refId])->first();
-          $kycEarning->last_kyc_earning = $now;
-          $kycEarning->balance = $kycEarning->balance + 10;
-          $kycEarning->save();
-        }
-        Log::info('successfully.');
-
-        if ($data->status === "user.inreview" || $data->status === "user.waiting") {
-          User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "FALSE", 'kyc_verified_at' => $now, "kyc_status" => 'PENDING']);
-        }
-
-        if ($data->status === "review.rejected") {
-          User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "FALSE", 'kyc_verified_at' => $now, "kyc_status" => 'REJECTED']);
-        }
-
-
-
-
-
-        // if ($data->status === "approved") {
-        //    User::where(['id'=>$data->refId, 'email'=>$data->email])->update(["kyc_verified"=>"TRUE",'kyc_verified_at'=> $now,"kyc_status"=>'APPROVED']);
-        //      $kycEarning =  ActionPoint::where(["user_id" => $data->refId])->first();
-
-        //      if ($kycEarning->last_kyc_earning === null) {
-        //          $kycEarning->last_kyc_earning = $now;
-        //          $kycEarning->balance = $kycEarning->balance +10;
-        //          $kycEarning->save();
-        //      }
-        // }
-        // Log::info('successfully.');
-
-        // if ($data->status === "inreview" || $data->status === "waiting") {
-        //    User::where(['id'=>$data->refId, 'email'=>$data->email])->update(["kyc_verified"=>"FALSE",'kyc_verified_at'=> $now,"kyc_status"=>'PENDING']);   
-        // }
-
-        // if ($data->status === "rejected") {
-        //    User::where(['id'=>$data->refId, 'email'=>$data->email])->update(["kyc_verified"=>"FALSE",'kyc_verified_at'=> $now,"kyc_status"=>'REJECTED']);   
-        // }
-
-        Log::info('Blockpass webhook verified successfully.');
-        return response()->json(['message' => 'Webhook verified successfully'], 200);
-      } else {
-        // Signature verification failed, log an error
-        Log::error('Blockpass webhook verification failed.');
-
-        return response()->json(['error' => 'Webhook verification failed'], 403);
+        $kycEarning =  ActionPoint::where(["user_id" => $data->refId])->first();
+        $kycEarning->last_kyc_earning = $now;
+        $kycEarning->balance = $kycEarning->balance + 10;
+        $kycEarning->save();
       }
+      Log::info('successfully.');
+
+      if ($data->status === "user.inreview" || $data->status === "user.waiting") {
+        User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "FALSE", 'kyc_verified_at' => $now, "kyc_status" => 'PENDING']);
+      }
+
+      if ($data->status === "review.rejected") {
+        User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "FALSE", 'kyc_verified_at' => $now, "kyc_status" => 'REJECTED']);
+      }
+
+      Log::info('Blockpass webhook verified successfully.');
+      return response()->json(['message' => 'Webhook verified successfully'], 200);
+      // } else {
+      //   // Signature verification failed, log an error
+      //   Log::error('Blockpass webhook verification failed.');
+
+      //   return response()->json(['error' => 'Webhook verification failed'], 403);
+      // }
     } catch (\Throwable $th) {
       Log::error(json_encode($th));
       $response = $Response::set(["message" => "{$th->getMessage()}"], false);
