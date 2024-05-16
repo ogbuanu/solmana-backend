@@ -118,12 +118,19 @@ class UserController extends Controller
 
       // Log::info($log);
 
-      $websecretKey = config('services.blockpass.webhook_secret_key');
+      $websecretKey = config('services.blockpass.secret_key');
+
+      Log::info("websecretKey", [$websecretKey]);
+
       $webhookData = $request->getContent();
       Log::info("webhookData", [$webhookData]);
 
       // Use correct header key based on Blockpass documentation
-      $receivedSignature = $request->header('X-Hub-Signature');
+
+      $receivedSignature = $request->header('X-Signature');
+
+      // $receivedSignature = $request->header('X-Hub-Signature');
+      // $receivedSignature = $request->header('X-Hub-Signature');
       Log::info("receivedSignature", [$receivedSignature]);
 
       // Calculate expected signature using hash_hmac with hex output
