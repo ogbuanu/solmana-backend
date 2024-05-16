@@ -91,7 +91,7 @@ class UserController extends Controller
     $data = (object) $request->all();
 
     try {
-      $websecretKey = config('services.blockpass.webhook_secret_key');
+      $websecretKey = config('services.blockpass.secret_key');
       $webhookData = $request->getContent();
       Log::info("webhookData", $webhookData);
 
@@ -168,8 +168,10 @@ class UserController extends Controller
         return response()->json(['error' => 'Webhook verification failed'], 403);
       }
     } catch (\Throwable $th) {
+      Log::error(json_encode($th));
       $response = $Response::set(["message" => "{$th->getMessage()}"], false);
     } catch (\Exception $e) {
+      Log::error(json_encode($e));
       $response = $Response::set(["message" => "{$e->getMessage()}"], false);
     }
     return response()->json($response,  $response->code);
