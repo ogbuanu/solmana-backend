@@ -123,11 +123,10 @@ class UserController extends Controller
       Log::info('Blockpass webhook verified successfully.');
 
       $now = Carbon::now();
-      $user = User::where('id', $data->refId)->first();
-
+      $user = User::where(['id' => $data->refId, 'email' =>  $data->email])->first();
       Log::info('user', $user);
       if (
-        $data->event == "review.approved" && !empty($user) && $user->kyc_status !== 'APPROVED'
+        $data->event == "review.approved" && !empty($user) && $user->kyc_status !== 'APPROVED' && $user->kyc_verified == "FALSE"
       ) {
         User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "TRUE", 'kyc_verified_at' => $now, "kyc_status" => 'APPROVED']);
 
