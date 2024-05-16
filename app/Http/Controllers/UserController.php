@@ -124,17 +124,17 @@ class UserController extends Controller
 
       $now = Carbon::now();
       $user = User::where('id', $data->refId)->first();
+
+      Log::info('user', $user);
       if (
-        $data->event == "review.approved" && !empty($user) && $user->kyc_status != 'APPROVED'
+        $data->event == "review.approved" && !empty($user) && $user->kyc_status !== 'APPROVED'
       ) {
         User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "TRUE", 'kyc_verified_at' => $now, "kyc_status" => 'APPROVED']);
 
-        $kycEarning =  ActionPoint::where(["user_id" => $data->refId])->first();
-        $kycEarning->last_kyc_earning = $now;
-        $kycEarning->balance = $kycEarning->balance + 10;
-        $kycEarning->save();
+        ActionPoint::where("user_id", $data->refId)->update(["last_kyc_earning" => $now, 'balance' => \DB::raw('balance + 60')]);
+        Log::info('successfully. main');
       }
-      Log::info('successfully.');
+
 
       if ($data->status === "user.inreview" || $data->status === "user.waiting") {
         User::where(['id' => $data->refId, 'email' => $data->email])->update(["kyc_verified" => "FALSE", 'kyc_verified_at' => $now, "kyc_status" => 'PENDING']);
