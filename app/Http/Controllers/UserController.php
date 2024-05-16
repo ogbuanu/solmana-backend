@@ -110,7 +110,6 @@ class UserController extends Controller
       Log::info("hash_equals", hash_equals($expectedSignatureEncoded, $receivedSignature));
 
 
-
       if (hash_equals($expectedSignatureEncoded, $receivedSignature)) {
         Log::info('Blockpass webhook verified successfully.');
 
