@@ -118,7 +118,7 @@ class UserController extends Controller
 
       // Log::info($log);
 
-      $websecretKey = config('services.blockpass.secret_key');
+      $websecretKey = config('services.blockpass.webhook_secret_key');
       $webhookData = $request->getContent();
       Log::info("webhookData", [$webhookData]);
 
