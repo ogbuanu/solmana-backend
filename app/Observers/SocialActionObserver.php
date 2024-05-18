@@ -22,6 +22,8 @@ class SocialActionObserver
     {
         //
         if ($socialAction->wasChanged('status') && $socialAction->status == "APPROVED") {
+            $socials = SocialAction::where('user_id', $socialAction->user_id)->where('status', 'APPROVED')->get();
+            if (count($socials) > 1) return;
             $action = ActionPoint::where('user_id', $socialAction->user_id)->first();
             $action->balance += 10;
             $action->save();
