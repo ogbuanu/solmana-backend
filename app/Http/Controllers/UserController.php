@@ -169,6 +169,10 @@ class UserController extends Controller
 
     try {
       $user = auth()->user();
+      $tweet = TweetAction::where(["user_id" => $user->id])->where('status', 'PENDING')->first();
+      if ($tweet) {
+        throw new \Exception('tweet is already pending');
+      }
       if (isset($data->tweet_link) && $data->tweet_link != null) {
 
         TweetAction::create(["user_id" => $user->id, "tweet_link" => $data->tweet_link]);
