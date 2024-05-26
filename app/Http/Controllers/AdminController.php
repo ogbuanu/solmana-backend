@@ -86,6 +86,27 @@ class AdminController extends Controller
         }
         return response()->json($response,  $response->code);
     }
+    public function updateManyTweetAction(Request $request)
+    {
+        $Response = new Response();
+        $response = $Response::get();
+        $data = (object) $request->all();
+        $approvalStatus = (object) config('data.approval');
+        $user = auth()->user();
+        try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
+            if (isset($data->action) && $data->action != null && isset($data->ids) && $data->id != null) {
+                $tweet = TweetAction::whereIn($data->id)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
+                $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
+            } else $response = $Response::set(["message" => "Action is required"], false);
+        } catch (\Throwable $th) {
+            //throw $th;
+            $response = $Response::set(["message" => "{$th->getMessage()}"], false);
+        }
+        return response()->json($response,  $response->code);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -135,6 +156,31 @@ class AdminController extends Controller
                     $social->save();
                     $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
                 }
+            } else $response = $Response::set(["message" => "Action is required"], false);
+        } catch (\Throwable $th) {
+            //throw $th;
+            $response = $Response::set(["message" => "{$th->getMessage()}"], false);
+        }
+        return response()->json($response,  $response->code);
+    }
+
+    public function updateManySocialAction(Request $request)
+    {
+        //
+        //
+        $Response = new Response();
+        $response = $Response::get();
+        $data = (object) $request->all();
+        $approvalStatus = (object) config('data.approval');
+        $user = auth()->user();
+        try {
+            if ($user->role != "ADMIN") {
+                throw new \Exception("unauthorized access");
+            }
+            if (isset($data->action) && $data->action != null && !empty($data->ids) && $data->ids->length != 0) {
+                $social = SocialAction::whereIn('id', $data->ids)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
+
+                $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
             } else $response = $Response::set(["message" => "Action is required"], false);
         } catch (\Throwable $th) {
             //throw $th;
