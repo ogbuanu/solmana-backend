@@ -42,6 +42,8 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'admin'], function () 
     Route::get('/fetch-social-action', [AdminController::class, 'fetchSocialActions']);
     Route::post('/update-tweet-action', [AdminController::class, 'updateTweetAction']);
     Route::post('/update-social-action', [AdminController::class, 'updateSocialAction']);
+    Route::post('/update-many-social-action', [AdminController::class, 'updateManySocialAction']);
+    Route::post('/update-many-tweet-action', [AdminController::class, 'updateManyTweetAction']);
 });
 
 Route::get('/cleareverything', function () {
