@@ -68,7 +68,7 @@ class PointObserver
         }
 
         if ($actionPoint->balance >= 10000) {
-            $actionPoint->tire_level = $Tire_Level['rice'];
+            $actionPoint->tire_level = $Tire_Level['rich'];
             $actionPoint->save();
         }
     }
