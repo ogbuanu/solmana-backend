@@ -97,8 +97,8 @@ class AdminController extends Controller
             if ($user->role != "ADMIN") {
                 throw new \Exception("unauthorized access");
             }
-            if (isset($data->action) && $data->action != null && isset($data->ids) && $data->id != null) {
-                $tweet = TweetAction::whereIn($data->id)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
+            if (isset($data->action) && $data->action != null && isset($data->ids) && count($data->ids) != null) {
+                $tweet = TweetAction::whereIn($data->ids)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
                 $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
             } else $response = $Response::set(["message" => "Action is required"], false);
         } catch (\Throwable $th) {
@@ -177,7 +177,7 @@ class AdminController extends Controller
             if ($user->role != "ADMIN") {
                 throw new \Exception("unauthorized access");
             }
-            if (isset($data->action) && $data->action != null && !empty($data->ids) && $data->ids->length != 0) {
+            if (isset($data->action) && $data->action != null && !empty($data->ids) && count($data->ids) != 0) {
                 $social = SocialAction::whereIn('id', $data->ids)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
 
                 $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
