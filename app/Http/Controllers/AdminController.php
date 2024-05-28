@@ -98,7 +98,7 @@ class AdminController extends Controller
                 throw new \Exception("unauthorized access");
             }
             if (isset($data->action) && $data->action != null && isset($data->ids) && count($data->ids) != null) {
-                $tweet = TweetAction::whereIn($data->ids)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
+                $tweet = TweetAction::whereIn('id', $data->ids)->update(['status' =>  $data->action == "APPROVE" ? $approvalStatus->approved : $approvalStatus->rejected]);
                 $response = $Response::set(["message" => "Action has been {$data->action} successfully"], true);
             } else $response = $Response::set(["message" => "Action is required"], false);
         } catch (\Throwable $th) {
